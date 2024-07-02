@@ -176,7 +176,7 @@ const Home = () => {
   return (
     <>
       <Box textAlign={'right'} mb={5}>
-        <Link href={'/appointments/create'} legacyBehavior>
+        <Link href={'/user-form'} legacyBehavior>
           <Button variant='contained'>Create +</Button>
         </Link>
       </Box>
