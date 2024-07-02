@@ -22,11 +22,14 @@ import DeleteIcon from '@mui/icons-material/Delete'
 import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye'
 import { AppointmentType } from 'src/constants' // Make sure this path is correct
 import ViewAppointmentDetailsDialog from '../views/pages/ViewAppointmentDetailsDialog'
+import UpdateAppointmentDialog from '../views/pages/UpdateAppointmentDialog'
+import formatTime from '../utilis/formatTime'
 
 const Home = () => {
   const [data, setData] = useState([])
   const [openDialog, setOpenDialog] = useState(false)
   const [viewDialog, setViewDialog] = useState(false)
+  const [editDialog, setEditDialog] = useState(false)
   const [selectedAppointment, setSelectedAppointment] = useState(null)
   const [loadingDetails, setLoadingDetails] = useState(false)
   const [deleting, setDeleting] = useState(false)
@@ -87,6 +90,33 @@ const Home = () => {
     setSelectedAppointment(null)
   }
 
+  const handleEditClick = appointmentId => {
+    setSelectedAppointment(appointmentId)
+    setEditDialog(true)
+  }
+
+  const handleCloseEditDialog = () => {
+    setEditDialog(false)
+    setSelectedAppointment(null)
+  }
+
+  const updateStatus = async (appointmentId, status) => {
+    try {
+      await axios.put(
+        '/api/appointments/update-type',
+        { appointmentId, status },
+        {
+          headers: { authorization: localStorage.getItem('token') }
+        }
+      )
+      toast.success('Appointment status updated successfully')
+      fetchData() // Refresh the data
+    } catch (error) {
+      console.error(error)
+      toast.error('Error updating appointment status')
+    }
+  }
+
   const columns = useMemo(
     () => [
       {
@@ -108,7 +138,12 @@ const Home = () => {
       },
       {
         header: 'Appointment Time',
-        accessorKey: 'appointment_time'
+        accessorKey: 'appointment_time',
+        Cell: ({ cell }) => {
+          const value = cell.getValue()
+
+          return formatTime(value)
+        }
       },
       {
         header: 'Status',
@@ -151,12 +186,7 @@ const Home = () => {
                 <RemoveRedEyeIcon />
               </div>
               <div style={{ width: '15px' }}></div>
-              <div
-                onClick={() => {
-                  router.push(`appointments/edit/${_id}`)
-                }}
-                style={{ cursor: 'pointer' }}
-              >
+              <div onClick={() => handleEditClick(_id)} style={{ cursor: 'pointer' }}>
                 <EditIcon />
               </div>
               <div style={{ width: '15px' }}></div>
@@ -206,6 +236,12 @@ const Home = () => {
         </DialogActions>
       </Dialog>
       <ViewAppointmentDetailsDialog _id={selectedAppointment} open={viewDialog} onClose={handleCloseViewDialog} />
+      <UpdateAppointmentDialog
+        appointmentId={selectedAppointment}
+        open={editDialog}
+        onClose={handleCloseEditDialog}
+        onUpdateComplete={fetchData} // Pass the fetchData function as a callback
+      />
     </>
   )
 }
