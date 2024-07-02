@@ -21,11 +21,14 @@ import { useRouter } from 'next/router'
 import DeleteIcon from '@mui/icons-material/Delete'
 import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye'
 import { AppointmentType } from 'src/constants' // Make sure this path is correct
+import ViewAppointmentDetailsDialog from '../views/pages/ViewAppointmentDetailsDialog'
 
 const Home = () => {
   const [data, setData] = useState([])
   const [openDialog, setOpenDialog] = useState(false)
+  const [viewDialog, setViewDialog] = useState(false)
   const [selectedAppointment, setSelectedAppointment] = useState(null)
+  const [loadingDetails, setLoadingDetails] = useState(false)
   const [deleting, setDeleting] = useState(false)
   const router = useRouter()
 
@@ -71,6 +74,16 @@ const Home = () => {
 
   const handleCancelDelete = () => {
     setOpenDialog(false)
+    setSelectedAppointment(null)
+  }
+
+  const handleViewDetails = appointmentId => {
+    setSelectedAppointment(appointmentId)
+    setViewDialog(true)
+  }
+
+  const handleCloseViewDialog = () => {
+    setViewDialog(false)
     setSelectedAppointment(null)
   }
 
@@ -134,12 +147,7 @@ const Home = () => {
 
           return (
             <Box display={'flex'}>
-              <div
-                onClick={() => {
-                  router.push(`appointments/${_id}`)
-                }}
-                style={{ cursor: 'pointer' }}
-              >
+              <div onClick={() => handleViewDetails(_id)} style={{ cursor: 'pointer' }}>
                 <RemoveRedEyeIcon />
               </div>
               <div style={{ width: '15px' }}></div>
@@ -176,7 +184,7 @@ const Home = () => {
   return (
     <>
       <Box textAlign={'right'} mb={5}>
-        <Link href={'/user-form'} legacyBehavior>
+        <Link href={'/appointments/create'} legacyBehavior>
           <Button variant='contained'>Create +</Button>
         </Link>
       </Box>
@@ -197,6 +205,7 @@ const Home = () => {
           </Button>
         </DialogActions>
       </Dialog>
+      <ViewAppointmentDetailsDialog _id={selectedAppointment} open={viewDialog} onClose={handleCloseViewDialog} />
     </>
   )
 }
