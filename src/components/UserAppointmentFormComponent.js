@@ -187,6 +187,7 @@ const UserAppointmentFormComponent = () => {
             headers: { authorization: localStorage.getItem('token') }
           })
           const appointment = res.data.payload.appointment
+          appointment.appointment_date = formatDate(appointment.appointment_date) // Format the date here
           setDefaultValues(appointment)
           methods.reset(appointment)
           setApiLoading(false)

@@ -24,6 +24,7 @@ import { AppointmentType } from 'src/constants' // Make sure this path is correc
 import ViewAppointmentDetailsDialog from '../views/pages/ViewAppointmentDetailsDialog'
 import UpdateAppointmentDialog from '../views/pages/UpdateAppointmentDialog'
 import formatTime from '../utilis/formatTime'
+import Appointments24Hours from '../views/pages/Appointments24Hours'
 
 const Home = () => {
   const [data, setData] = useState([])
@@ -214,11 +215,12 @@ const Home = () => {
   return (
     <>
       <Box textAlign={'right'} mb={5}>
-        <Link href={'/appointments/create'} legacyBehavior>
+        <Link href={'/user-form'} legacyBehavior>
           <Button variant='contained'>Create +</Button>
         </Link>
       </Box>
       <MaterialReactTable table={table} />
+      <Appointments24Hours /> {/* Use the new component here */}
       <Dialog open={openDialog} onClose={handleCancelDelete}>
         <DialogTitle>Confirm Deletion</DialogTitle>
         <DialogContent>
@@ -235,12 +237,17 @@ const Home = () => {
           </Button>
         </DialogActions>
       </Dialog>
-      <ViewAppointmentDetailsDialog _id={selectedAppointment} open={viewDialog} onClose={handleCloseViewDialog} />
+      <ViewAppointmentDetailsDialog
+        _id={selectedAppointment}
+        open={viewDialog}
+        onClose={handleCloseViewDialog}
+        onUpdateComplete={fetchData} // Pass the fetchData function as a callback
+      />
       <UpdateAppointmentDialog
         appointmentId={selectedAppointment}
         open={editDialog}
         onClose={handleCloseEditDialog}
-        onUpdateComplete={fetchData} // Pass the fetchData function as a callback
+        onUpdateComplete={fetchData}
       />
     </>
   )
