@@ -1,13 +1,12 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 const path = require('path')
 
-/** @type {import('next').NextConfig} */
-
-// Remove this if you're not using Fullcalendar features
-
 module.exports = {
   trailingSlash: true,
   reactStrictMode: false,
+  env: {
+    MAILERSEND_API_KEY: process.env.MAILERSEND_API_KEY
+  },
   webpack: config => {
     config.resolve.alias = {
       ...config.resolve.alias,

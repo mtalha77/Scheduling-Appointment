@@ -25,6 +25,7 @@ import ViewAppointmentDetailsDialog from '../views/pages/ViewAppointmentDetailsD
 import UpdateAppointmentDialog from '../views/pages/UpdateAppointmentDialog'
 import formatTime from '../utilis/formatTime'
 import Appointments24Hours from '../views/pages/Appointments24Hours'
+import SendIcon from '@mui/icons-material/Send' // Import the send icon
 
 const Home = () => {
   const [data, setData] = useState([])
@@ -118,6 +119,21 @@ const Home = () => {
     }
   }
 
+  const handleSendEmail = async appointment => {
+    try {
+      // Send initial email
+      await axios.post('/api/appointments/send-email', { appointmentId: appointment._id })
+
+      // Schedule reminder emails
+      await axios.post('/api/appointments/schedule-reminders', { appointmentId: appointment._id })
+
+      toast.success('Email sent and reminders scheduled successfully')
+    } catch (error) {
+      console.error('Error sending email:', error)
+      toast.error('Error sending email')
+    }
+  }
+
   const columns = useMemo(
     () => [
       {
@@ -179,20 +195,24 @@ const Home = () => {
         header: 'Actions',
         accessorKey: 'actions',
         Cell: ({ cell }) => {
-          const { _id } = cell.row.original
+          const appointment = cell.row.original
 
           return (
             <Box display={'flex'}>
-              <div onClick={() => handleViewDetails(_id)} style={{ cursor: 'pointer' }}>
+              <div onClick={() => handleViewDetails(appointment._id)} style={{ cursor: 'pointer' }}>
                 <RemoveRedEyeIcon />
               </div>
               <div style={{ width: '15px' }}></div>
-              <div onClick={() => handleEditClick(_id)} style={{ cursor: 'pointer' }}>
+              <div onClick={() => handleEditClick(appointment._id)} style={{ cursor: 'pointer' }}>
                 <EditIcon />
               </div>
               <div style={{ width: '15px' }}></div>
-              <div onClick={() => handleDeleteClick(_id)} style={{ cursor: 'pointer' }}>
-                {deleting && selectedAppointment === _id ? <CircularProgress size={25} /> : <DeleteIcon />}
+              <div onClick={() => handleDeleteClick(appointment._id)} style={{ cursor: 'pointer' }}>
+                {deleting && selectedAppointment === appointment._id ? <CircularProgress size={25} /> : <DeleteIcon />}
+              </div>
+              <div style={{ width: '15px' }}></div>
+              <div onClick={() => handleSendEmail(appointment)} style={{ cursor: 'pointer' }}>
+                <SendIcon />
               </div>
             </Box>
           )
