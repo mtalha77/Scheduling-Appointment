@@ -2,6 +2,8 @@
 import Box from '@mui/material/Box'
 import { useTheme } from '@mui/material/styles'
 
+// ** Type Import
+
 // ** Footer Content Component
 import FooterContent from './FooterContent'
 
@@ -14,6 +16,7 @@ const Footer = props => {
 
   // ** Vars
   const { skin, footer, layout, contentWidth } = settings
+
   if (footer === 'hidden') {
     return null
   }
